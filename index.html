@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ASE System</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #111;
+      color: white;
+      padding: 20px;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 6px;
+      border: none;
+    }
+
+    button {
+      background: cyan;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    pre {
+      background: #222;
+      padding: 10px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>⚡ ASE INPUT SYSTEM</h2>
+
+<input id="g" placeholder="Growth (G)">
+<input id="t" placeholder="Trading (T)">
+<input id="s" placeholder="System (S)">
+<input id="v" placeholder="VOID (V)">
+<input id="c" placeholder="Cyber (C)">
+
+<button onclick="submitASE()">SUBMIT</button>
+
+<pre id="output">waiting input...</pre>
+
+<script>
+function submitASE() {
+  const data = {
+    G: document.getElementById("g").value,
+    T: document.getElementById("t").value,
+    S: document.getElementById("s").value,
+    V: document.getElementById("v").value,
+    C: document.getElementById("c").value,
+    time: new Date().toISOString()
+  };
+
+  document.getElementById("output").innerText =
+    JSON.stringify(data, null, 2);
+
+  console.log("ASE LOG:", data);
+}
+</script>
+
+</body>
+</html>
