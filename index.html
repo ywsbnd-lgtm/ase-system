@@ -190,6 +190,53 @@
             white-space: pre-wrap;
         }
 
+        /* AI INSIGHT OUTPUT */
+        .insight-section {
+            background: #0f1629;
+            border: 1px solid #1a1f3a;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .insight-section.active {
+            display: block;
+        }
+
+        .insight-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #7a7a8e;
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+        }
+
+        .insight-list {
+            background: #0a0e27;
+            border: 1px solid #1a1f3a;
+            border-radius: 4px;
+            padding: 1rem;
+            list-style: none;
+        }
+
+        .insight-item {
+            padding: 0.6rem 0;
+            color: #4a9eff;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #1a1f3a;
+        }
+
+        .insight-item:last-child {
+            border-bottom: none;
+        }
+
+        .insight-item::before {
+            content: "→ ";
+            color: #7a7a8e;
+            margin-right: 0.5rem;
+        }
+
         /* HISTORY SECTION */
         .history-section {
             margin-top: 2rem;
@@ -323,6 +370,7 @@
 
             .input-section,
             .output-section,
+            .insight-section,
             .history-item {
                 padding: 1rem;
             }
@@ -382,6 +430,12 @@
             </form>
         </div>
 
+        <!-- AI INSIGHT OUTPUT -->
+        <div class="insight-section" id="insightSection">
+            <div class="insight-label">AI Insights</div>
+            <ul class="insight-list" id="insightList"></ul>
+        </div>
+
         <!-- JSON OUTPUT -->
         <div class="output-section" id="outputSection">
             <div class="output-label">Last Entry (JSON)</div>
@@ -406,6 +460,29 @@
     </div>
 
     <script>
+        // ============================================
+        // AI INSIGHT FUNCTION
+        // ============================================
+        function generateInsight(data) {
+            const insights = [];
+            
+            // Parse values with fallback to 0
+            const G = parseInt(data.G) || 0;
+            const T = parseInt(data.T) || 0;
+            const S = parseInt(data.S) || 0;
+            const V = parseInt(data.V) || 0;
+            const C = parseInt(data.C) || 0;
+            
+            // Apply rules
+            if (G < 4) insights.push("Growth rendah");
+            if (T > 7) insights.push("Trading aktif");
+            if (S > 7) insights.push("System strong");
+            if (V > 7) insights.push("Over observation");
+            if (C < 4) insights.push("Cyber risk");
+            
+            return insights;
+        }
+
         // ============================================
         // DATA MANAGEMENT
         // ============================================
@@ -478,6 +555,25 @@
                     hour: '2-digit',
                     minute: '2-digit'
                 });
+            }
+
+            static renderInsightOutput(insights) {
+                const insightList = document.getElementById('insightList');
+                insightList.innerHTML = '';
+                
+                if (insights.length === 0) {
+                    document.getElementById('insightSection').classList.remove('active');
+                    return;
+                }
+                
+                insights.forEach(insight => {
+                    const item = document.createElement('li');
+                    item.className = 'insight-item';
+                    item.textContent = insight;
+                    insightList.appendChild(item);
+                });
+                
+                document.getElementById('insightSection').classList.add('active');
             }
 
             static renderJSONOutput(entry) {
@@ -623,9 +719,15 @@
                     return;
                 }
 
+                // Generate AI insights from form data
+                const insights = generateInsight(data);
+
                 // Add entry and update UI
                 const entry = this.dataStore.addEntry(data);
                 this.renderUI();
+                
+                // Display insights
+                ASEUIRenderer.renderInsightOutput(insights);
 
                 // Clear form and refocus first input
                 this.form.reset();
